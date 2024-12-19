@@ -1,16 +1,47 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import axios from "axios";
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+    try {
+      await axios.post("http://localhost:5000/signup", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+      alert("Signup successful! Redirecting to login...");
+      navigate("/login");
+    } catch (error) {
+      console.error("Signup failed:", error);
+      alert("Signup failed. Please try again.");
+    }
+  };
 
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
       <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Create an Account</h2>
-        <form>
+        <form onSubmit={handleSubmit}>
           {/* Full Name */}
           <div className="mb-4">
             <label htmlFor="name" className="block text-sm font-medium text-gray-600">
@@ -19,6 +50,8 @@ const SignUpPage = () => {
             <input
               type="text"
               id="name"
+              value={formData.name}
+              onChange={handleChange}
               className="mt-2 w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
               placeholder="Enter your full name"
             />
@@ -32,6 +65,8 @@ const SignUpPage = () => {
             <input
               type="email"
               id="email"
+              value={formData.email}
+              onChange={handleChange}
               className="mt-2 w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
               placeholder="Enter your email"
             />
@@ -45,8 +80,8 @@ const SignUpPage = () => {
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleChange}
               className="mt-2 w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
               placeholder="Create a password"
             />
@@ -60,8 +95,8 @@ const SignUpPage = () => {
             <input
               type={showPassword ? "text" : "password"}
               id="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              value={formData.confirmPassword}
+              onChange={handleChange}
               className="mt-2 w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
               placeholder="Confirm your password"
             />
