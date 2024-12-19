@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   return (
+    
     <div className="flex h-screen">
       {/* Left Section */}
       <div
